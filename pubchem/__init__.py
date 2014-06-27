@@ -4,7 +4,7 @@ Utilities for interacting with PubChem.
 
 __author__ = "Steven Kearnes"
 __copyright__ = "Copyright 2014, Stanford University"
-__license__ = "BSD 3-clause"
+__license__ = "3-clause BSD"
 
 import urllib2
 
