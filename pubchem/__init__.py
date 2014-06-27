@@ -4,7 +4,7 @@ Utilities for interacting with PubChem.
 
 __author__ = "Steven Kearnes"
 __copyright__ = "Copyright 2014, Stanford University"
-__license__ = "BSD 3-clause"
+__license__ = "3-clause BSD"
 
 import urllib2
 
@@ -158,5 +158,6 @@ class PubChem(object):
         for this in response.readlines():
             this = this.strip()
             if this:
+                this = int(this)
                 ids.append(this)
         return ids

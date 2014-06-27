@@ -19,7 +19,7 @@ def test_sid():
 def test_3d():
     """3D structure request."""
     p = PubChem(delay=3)
-    p.download_ids([2244], use_3d=True, n_conformers=10)
+    p.download_ids([2244], use_3d=True, n_conformers=3)
 
 
 def test_aid_cids():
