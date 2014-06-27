@@ -153,7 +153,8 @@ class PubChem(object):
         else:
             mapping['database'] = 'cids'
         if activity_outcome is not None:
-            url_template += '?cids_type=' + activity_outcome.lower()
+            url_template += '?{}_type={}'.format(mapping['database'],
+                                                 activity_outcome.lower())
         url = url_template % mapping
         response = urllib2.urlopen(url)
         ids = []
