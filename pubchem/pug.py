@@ -185,7 +185,6 @@ class PUGQuery(object):
         """
         q = urllib2.urlopen(self.url, query)
         response = q.read()
-        print response
 
         # check for errors
         status_re = re.search('<PCT-Status value="(.*?)"/>', response)
