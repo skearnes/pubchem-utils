@@ -48,7 +48,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'pubchem'
-copyright = u'2014, Steven Kearnes'
+copyright = u'2014, Stanford University'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
