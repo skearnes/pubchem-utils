@@ -15,7 +15,7 @@ cids = [2244, 3672]
 filename = 'painkillers.sdf.gz'
 
 p = PubChem()
-q = p.get_ids(cids)
+q = p.download_ids(cids)
 q.fetch(filename)
 ```
 
