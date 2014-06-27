@@ -3,6 +3,10 @@ pubchem
 
 Utilities for interacting with [PubChem](https://pubchem.ncbi.nlm.nih.gov)
 
+Documentation
+-------------
+http://pubchem.readthedocs.org
+
 Quick Start
 -----------
 
