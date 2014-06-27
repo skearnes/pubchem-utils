@@ -1,7 +1,7 @@
 pubchem
 =======
 
-Utilities for interacting with PubChem and PubChem BioAssay
+Utilities for interacting with [PubChem](https://pubchem.ncbi.nlm.nih.gov).
 
 Quick Start
 -----------
