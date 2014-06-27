@@ -158,5 +158,6 @@ class PubChem(object):
         for this in response.readlines():
             this = this.strip()
             if this:
+                this = int(this)
                 ids.append(this)
         return ids
