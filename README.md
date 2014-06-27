@@ -11,11 +11,8 @@ Download structures for a batch of CIDs:
 ```python
 from pubchem import PubChem
 
-cids = [2244, 3672]
-filename = 'painkillers.sdf.gz'
-
 p = PubChem()
-p.download_ids(cids, filename)
+p.download_ids([2244, 3672], 'painkillers.sdf.gz')
 ```
 
 Retrieve SIDs active in a PubChem BioAssay experiment:
