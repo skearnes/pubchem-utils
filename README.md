@@ -6,7 +6,7 @@ Utilities for interacting with PubChem and PubChem BioAssay
 Quick Start
 -----------
 
-* Download structures for a batch of CIDs
+Download structures for a batch of CIDs:
 
 ```python
 from pubchem import PubChem
@@ -19,7 +19,7 @@ q = p.get_ids(cids)
 q.fetch(filename)
 ```
 
-* Retrieve SIDs active in a PubChem BioAssay experiment
+Retrieve SIDs active in a PubChem BioAssay experiment:
 
 ```python
 from pubchem import PubChem
