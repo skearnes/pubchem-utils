@@ -7,8 +7,7 @@ def main():
         version='0.1',
         license='3-clause BSD',
         url='https://github.com/skearnes/pubchem',
-        description=('Utilities for interacting with PubChem and PubChem ' +
-                     'BioAssay'),
+        description='Utilities for interacting with PubChem',
         packages=find_packages(),
     )
 
