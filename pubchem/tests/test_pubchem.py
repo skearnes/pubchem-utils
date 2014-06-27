@@ -7,19 +7,19 @@ from pubchem import PubChem
 def test_cid():
     """CID request."""
     p = PubChem(delay=3)
-    p.get_ids([2244])
+    p.download_ids([2244])
 
 
 def test_sid():
     """SID request."""
     p = PubChem(delay=3)
-    p.get_ids([179038559], sids=True)
+    p.download_ids([179038559], sids=True)
 
 
 def test_3d():
     """3D structure request."""
     p = PubChem(delay=3)
-    p.get_ids([2244], use_3d=True, n_conformers=10)
+    p.download_ids([2244], use_3d=True, n_conformers=10)
 
 
 def test_aid_cids():
