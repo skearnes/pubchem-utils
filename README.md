@@ -15,8 +15,7 @@ cids = [2244, 3672]
 filename = 'painkillers.sdf.gz'
 
 p = PubChem()
-q = p.download_ids(cids)
-q.fetch(filename)
+p.download_ids(cids, filename)
 ```
 
 Retrieve SIDs active in a PubChem BioAssay experiment:
