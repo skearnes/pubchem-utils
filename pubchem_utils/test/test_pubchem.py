@@ -8,7 +8,7 @@ import os
 import unittest
 import urllib2
 
-from pubchem import PubChem
+from .. import PubChem
 
 
 class TestPubChem(unittest.TestCase):
