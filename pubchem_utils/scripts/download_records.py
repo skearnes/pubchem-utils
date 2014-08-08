@@ -7,6 +7,7 @@ __copyright__ = "Copyright 2014, Stanford University"
 __license__ = "3-clause BSD"
 
 import argparse
+import numpy as np
 
 from pubchem_utils import PubChem
 
@@ -28,8 +29,8 @@ def parse_args(input_args=None):
     parser.add_argument('--sids', action='store_true',
                         help='Whether IDs are substance IDs (if False, IDs ' +
                              'are assumed to be compound IDs).')
-    parser.add_argument('-f', '--format', dest='download_format', default='sdf',
-                        help='Download format.')
+    parser.add_argument('-f', '--format', dest='download_format',
+                        default='sdf', help='Download format.')
     parser.add_argument('-c', '--compression', default='gzip',
                         help='Compression type.')
     parser.add_argument('--3d', action='store_true', dest='use_3d',
@@ -38,9 +39,10 @@ def parse_args(input_args=None):
                         help='Number of conformers to download if ' +
                              'retrieving 3D structures.')
     parser.add_argument('-d', '--delay', type=int, default=10,
-                        help='Number of seconds to wait between status checks.')
-    args = parser.parse_args(input_args)
-    return args
+                        help='Number of seconds to wait between status ' +
+                             'checks.')
+    rval = parser.parse_args(input_args)
+    return rval
 
 
 def main(ids, filename=None, sids=False, download_format='sdf',
@@ -83,7 +85,7 @@ def read_ids(filename):
         Filename containing PubChem record IDs.
     """
     with open(filename) as f:
-        ids = [line.strip() for line in f]
+        ids = np.asarray([line.strip() for line in f], dtype=int)
     return ids
 
 if __name__ == '__main__':
