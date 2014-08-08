@@ -31,6 +31,8 @@ class PUGQuery(object):
         Whether to automatically submit the query.
     delay : int, optional (default 10)
         Number of seconds to wait between status checks.
+    n_attempts : int, optional (default 3)
+        Number of times to attempt query submission.
     """
     status_template = """
     <PCT-Data>
@@ -48,9 +50,10 @@ class PUGQuery(object):
     """
     url = 'https://pubchem.ncbi.nlm.nih.gov/pug/pug.cgi'
 
-    def __init__(self, query, submit=True, delay=10):
+    def __init__(self, query, submit=True, delay=10, n_attempts=3):
         self.query = query
         self.delay = delay
+        self.n_attemps = n_attempts
 
         self.submitted = False
         self.id = None
@@ -71,7 +74,16 @@ class PUGQuery(object):
         query : str
             PUG query XML.
         """
-        q = urllib2.urlopen(self.url, query)
+        q = None
+        for i in xrange(self.n_attemps):
+            try:
+                q = urllib2.urlopen(self.url, query)
+                break
+            except urllib2.HTTPError as e:
+                if i + 1 < self.n_attemps:
+                    continue
+                else:
+                    raise e
         response = q.read()
 
         # check for errors
