@@ -6,6 +6,7 @@ __author__ = "Steven Kearnes"
 __copyright__ = "Copyright 2014, Stanford University"
 __license__ = "3-clause BSD"
 
+import numpy as np
 import urllib2
 
 from pubchem.pug import PUGQuery
@@ -27,9 +28,8 @@ class PubChem(object):
         self.submit = submit
         self.delay = delay
 
-    def download_ids(self, ids, filename=None, sids=False,
-                     download_format='sdf', compression='gzip', use_3d=False,
-                     n_conformers=1):
+    def get_records(self, ids, filename=None, sids=False, download_format='sdf',
+                    compression='gzip', use_3d=False, n_conformers=1):
         """
         Download records for substances or compounds identified by
         PubChem substance IDs (SIDs) or compound IDs (CIDs).
@@ -124,8 +124,8 @@ class PubChem(object):
         # construct query
         query = PUGQuery(query_template % mapping, submit=self.submit,
                          delay=self.delay)
-        filename = query.fetch(filename)
-        return filename
+        rval = query.fetch(filename)
+        return rval
 
     def get_bioassay_ids(self, aid, sids=False, activity_outcome=None):
         """
@@ -158,6 +158,6 @@ class PubChem(object):
         for this in response.readlines():
             this = this.strip()
             if this:
-                this = int(this)
                 ids.append(this)
+        ids = np.asarray(ids, dtype=int)
         return ids
