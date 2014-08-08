@@ -127,7 +127,7 @@ class PubChem(object):
         rval = query.fetch(filename)
         return rval
 
-    def get_ids_from_bioassay(self, aid, sids=False, activity_outcome=None):
+    def get_ids_from_assay(self, aid, sids=False, activity_outcome=None):
         """
         Retrieve substance or compound IDs tested in a PubChem BioAssay
         assay.

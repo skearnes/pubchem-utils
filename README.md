@@ -21,5 +21,5 @@ Retrieve SIDs active in a PubChem BioAssay experiment:
 from pubchem_utils import PubChem
 
 p = PubChem()
-sids = p.get_bioassay_ids(466, sids=True, activity_outcome='active')
+sids = p.get_ids_from_assay(466, sids=True, activity_outcome='active')
 ```
