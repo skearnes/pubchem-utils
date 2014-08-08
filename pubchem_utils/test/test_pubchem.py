@@ -38,6 +38,35 @@ class TestPubChem(unittest.TestCase):
             data = f.read()
         return data
 
+    def identical_sdf(self, a, b):
+        """
+        Compare SDF records.
+
+        SDF records downloaded from PubChem have a timestamp that should not be
+        considered in the comparison.
+
+        Parameters
+        ----------
+        a, b : str
+            SDF records to compare.
+        """
+        if a == b:  # sometimes the timestamps match
+            return True
+
+        try:
+            a_lines = a.split('\n')
+            b_lines = b.split('\n')
+            assert len(a_lines) == len(b_lines)
+            for i in xrange(len(a_lines)):
+                if i == 1:
+                    assert a_lines[i].strip().startswith('-OEChem')
+                    assert b_lines[i].strip().startswith('-OEChem')
+                    continue
+                assert a_lines[i] == b_lines[i]
+            return True
+        except AssertionError:
+            return False
+
     def test_cid(self):
         """
         2D CID request.
@@ -45,7 +74,7 @@ class TestPubChem(unittest.TestCase):
         url = os.path.join(self.rest_url, 'compound/cid/2244/SDF')
         ref = urllib2.urlopen(url).read()
         data = self.engine.get_records([2244])
-        assert self.read_gzip_string(data) == ref
+        assert self.identical_sdf(self.read_gzip_string(data), ref)
 
     def test_sid(self):
         """
@@ -54,7 +83,7 @@ class TestPubChem(unittest.TestCase):
         url = os.path.join(self.rest_url, 'substance/sid/179038559/SDF')
         ref = urllib2.urlopen(url).read()
         data = self.engine.get_records([179038559], sids=True)
-        assert self.read_gzip_string(data) == ref
+        assert self.identical_sdf(self.read_gzip_string(data), ref)
 
     def test_3d(self):
         """
@@ -64,7 +93,7 @@ class TestPubChem(unittest.TestCase):
                            'compound/cid/2244/SDF?record_type=3d')
         ref = urllib2.urlopen(url).read()
         data = self.engine.get_records([2244], use_3d=True)
-        assert self.read_gzip_string(data) == ref
+        assert self.identical_sdf(self.read_gzip_string(data), ref)
 
     def test_aid_cids(self):
         """
