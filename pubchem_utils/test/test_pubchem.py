@@ -101,7 +101,7 @@ class TestPubChem(unittest.TestCase):
         """
         url = os.path.join(self.rest_url, 'assay/aid/466/cids/TXT')
         ref = np.asarray(urllib2.urlopen(url).read().split(), dtype=int)
-        data = self.engine.get_bioassay_ids(466)
+        data = self.engine.get_ids_from_assay(466)
         assert np.array_equal(data, ref)
 
     def test_aid_sids(self):
@@ -110,7 +110,7 @@ class TestPubChem(unittest.TestCase):
         """
         url = os.path.join(self.rest_url, 'assay/aid/466/sids/TXT')
         ref = np.asarray(urllib2.urlopen(url).read().split(), dtype=int)
-        data = self.engine.get_bioassay_ids(466, sids=True)
+        data = self.engine.get_ids_from_assay(466, sids=True)
         assert np.array_equal(data, ref)
 
     def test_aid_active_cids(self):
@@ -120,7 +120,7 @@ class TestPubChem(unittest.TestCase):
         url = os.path.join(self.rest_url,
                            'assay/aid/466/cids/TXT?cids_type=active')
         ref = np.asarray(urllib2.urlopen(url).read().split(), dtype=int)
-        data = self.engine.get_bioassay_ids(466, activity_outcome='active')
+        data = self.engine.get_ids_from_assay(466, activity_outcome='active')
         assert np.array_equal(data, ref)
 
     def test_aid_inactive_cids(self):
@@ -130,7 +130,7 @@ class TestPubChem(unittest.TestCase):
         url = os.path.join(self.rest_url,
                            'assay/aid/466/cids/TXT?cids_type=inactive')
         ref = np.asarray(urllib2.urlopen(url).read().split(), dtype=int)
-        data = self.engine.get_bioassay_ids(466, activity_outcome='inactive')
+        data = self.engine.get_ids_from_assay(466, activity_outcome='inactive')
         assert np.array_equal(data, ref)
 
     def test_aid_active_sids(self):
@@ -140,7 +140,7 @@ class TestPubChem(unittest.TestCase):
         url = os.path.join(self.rest_url,
                            'assay/aid/466/sids/TXT?sids_type=active')
         ref = np.asarray(urllib2.urlopen(url).read().split(), dtype=int)
-        data = self.engine.get_bioassay_ids(466, sids=True,
+        data = self.engine.get_ids_from_assay(466, sids=True,
                                             activity_outcome='active')
         assert np.array_equal(data, ref)
 
@@ -151,6 +151,6 @@ class TestPubChem(unittest.TestCase):
         url = os.path.join(self.rest_url,
                            'assay/aid/466/sids/TXT?sids_type=inactive')
         ref = np.asarray(urllib2.urlopen(url).read().split(), dtype=int)
-        data = self.engine.get_bioassay_ids(466, sids=True,
+        data = self.engine.get_ids_from_assay(466, sids=True,
                                             activity_outcome='inactive')
         assert np.array_equal(data, ref)
