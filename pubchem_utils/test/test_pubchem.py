@@ -141,7 +141,7 @@ class TestPubChem(unittest.TestCase):
                            'assay/aid/466/sids/TXT?sids_type=active')
         ref = np.asarray(urllib2.urlopen(url).read().split(), dtype=int)
         data = self.engine.get_ids_from_assay(466, sids=True,
-                                            activity_outcome='active')
+                                              activity_outcome='active')
         assert np.array_equal(data, ref)
 
     def test_aid_inactive_sids(self):
@@ -152,5 +152,5 @@ class TestPubChem(unittest.TestCase):
                            'assay/aid/466/sids/TXT?sids_type=inactive')
         ref = np.asarray(urllib2.urlopen(url).read().split(), dtype=int)
         data = self.engine.get_ids_from_assay(466, sids=True,
-                                            activity_outcome='inactive')
+                                              activity_outcome='inactive')
         assert np.array_equal(data, ref)

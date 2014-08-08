@@ -28,8 +28,9 @@ class PubChem(object):
         self.submit = submit
         self.delay = delay
 
-    def get_records(self, ids, filename=None, sids=False, download_format='sdf',
-                    compression='gzip', use_3d=False, n_conformers=1):
+    def get_records(self, ids, filename=None, sids=False,
+                    download_format='sdf', compression='gzip', use_3d=False,
+                    n_conformers=1):
         """
         Download records for substances or compounds identified by
         PubChem substance IDs (SIDs) or compound IDs (CIDs).
