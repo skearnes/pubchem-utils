@@ -56,6 +56,7 @@ class PUGQuery(object):
         self.id = None
         self.download_url = None
         self.filename = None
+        self.data = None
 
         if submit:
             self.submit()
@@ -94,13 +95,17 @@ class PUGQuery(object):
             self.id = reqid_re.groups()[0]
 
     def check_status(self):
-        """Check the status of the query."""
+        """
+        Check the status of the query.
+        """
         assert self.id is not None
         query = self.status_template % {'id': self.id}
         self.pug_request(query)
 
     def submit(self):
-        """Submit the query and monitor its progess."""
+        """
+        Submit the query and monitor its progess.
+        """
         if self.submitted:
             warnings.warn('This request has already been submitted.')
             return
@@ -117,15 +122,25 @@ class PUGQuery(object):
         Parameters
         ----------
         filename : str, optional
-            Output filename. If not provided, a temporary file is created.
+            Output filename. If not provided, the data is read into memory.
         """
         if not self.submitted:
             self.submit()
-        if self.download_url is not None:
+        if self.download_url is None:
+            raise PUGError('No download URL.')
+
+        # fetch
+        if filename is not None:
             filename, _ = urllib.urlretrieve(self.download_url, filename)
-        self.filename = filename
-        return filename
+            self.filename = filename
+            return filename
+        else:
+            data = urllib2.urlopen(self.download_url).read()
+            self.data = data
+            return data
 
 
 class PUGError(Exception):
-    """PUG exception class."""
+    """
+    PUG exception class.
+    """
