@@ -1,5 +1,10 @@
 language: python
 python: 2.7
+
+# install code analysis tools
+before_install:
+ - pip install pep8
+ - pip install pyflakes
   
 # install the package
 install: python setup.py install
