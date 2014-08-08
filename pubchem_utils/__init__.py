@@ -9,7 +9,7 @@ __license__ = "3-clause BSD"
 import numpy as np
 import urllib2
 
-from pubchem.pug import PUGQuery
+from .pug import PUGQuery
 
 
 class PubChem(object):
