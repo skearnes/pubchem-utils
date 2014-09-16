@@ -11,7 +11,9 @@ __author__ = "Steven Kearnes"
 __copyright__ = "Copyright 2014, Stanford University"
 __license__ = "3-clause BSD"
 
+import gzip
 import re
+from StringIO import StringIO
 import time
 import urllib
 import urllib2
@@ -127,7 +129,7 @@ class PUGQuery(object):
             time.sleep(self.delay)
             self.check_status()
 
-    def fetch(self, filename=None):
+    def fetch(self, filename=None, compression=None):
         """
         Fetch the result of the query.
 
@@ -135,6 +137,8 @@ class PUGQuery(object):
         ----------
         filename : str, optional
             Output filename. If not provided, the data is read into memory.
+        compression : str, optional
+            Compression type used to decode data.
         """
         if not self.submitted:
             self.submit()
@@ -148,6 +152,12 @@ class PUGQuery(object):
             return filename
         else:
             data = urllib2.urlopen(self.download_url).read()
+            if compression is not None:
+                if compression == 'gzip':
+                    with gzip.GzipFile(fileobj=StringIO(data)) as f:
+                        data = f.read()
+                else:
+                    raise NotImplementedError(compression)
             self.data = data
             return data
 

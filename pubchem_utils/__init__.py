@@ -162,3 +162,81 @@ class PubChem(object):
                 ids.append(this)
         ids = np.asarray(ids, dtype=int)
         return ids
+
+    def id_exchange(self, ids, source, operation_type='same',
+                    output_type='cid'):
+        """
+        Use the PubChem Identifier exchange service.
+
+        Parameters
+        ----------
+        ids : iterable
+            Input identifiers.
+        source : str
+            Input source.
+        operation_type : str, optional (default 'same')
+            Operation type. Defaults to exact matches.
+        output_type : str, optional (default 'cid')
+            Output type. Defaults to PubChem CIDs.
+        """
+        query_template = """
+<PCT-Data>
+  <PCT-Data_input>
+    <PCT-InputData>
+      <PCT-InputData_query>
+        <PCT-Query>
+          <PCT-Query_type>
+            <PCT-QueryType>
+              <PCT-QueryType_id-exchange>
+                <PCT-QueryIDExchange>
+                  <PCT-QueryIDExchange_input>
+                    <PCT-QueryUids>
+                      <PCT-QueryUids_source-ids>
+                        <PCT-RegistryIDs>
+        <PCT-RegistryIDs_source-name>%(source)s</PCT-RegistryIDs_source-name>
+                          <PCT-RegistryIDs_source-ids>
+                            %(source_ids)s
+                          </PCT-RegistryIDs_source-ids>
+                        </PCT-RegistryIDs>
+                      </PCT-QueryUids_source-ids>
+                    </PCT-QueryUids>
+                  </PCT-QueryIDExchange_input>
+                  <PCT-QueryIDExchange_operation-type
+                    value="%(operation_type)s"/>
+                  <PCT-QueryIDExchange_output-type value="%(output_type)s"/>
+                  <PCT-QueryIDExchange_output-method value="file-pair"/>
+                  <PCT-QueryIDExchange_compression value="gzip"/>
+                </PCT-QueryIDExchange>
+              </PCT-QueryType_id-exchange>
+            </PCT-QueryType>
+          </PCT-Query_type>
+        </PCT-Query>
+      </PCT-InputData_query>
+    </PCT-InputData>
+  </PCT-Data_input>
+</PCT-Data>
+"""
+        mapping = {'source': source, 'operation_type': operation_type,
+                   'output_type': output_type}
+        source_ids = []
+        for source_id in ids:
+            id_xml = ('<PCT-RegistryIDs_source-ids_E>' + source_id
+                      + '</PCT-RegistryIDs_source-ids_E>\n')
+            source_ids.append(id_xml)
+        mapping['source_ids'] = ''.join(source_ids)
+
+        # construct query
+        query = PUGQuery(query_template % mapping, submit=self.submit,
+                         delay=self.delay)
+        rval = query.fetch(compression='gzip')
+
+        # identify matched and unmatched IDs
+        matched = {}
+        for line in rval:
+            source, dest = line.split()
+            matched[source] = dest
+        unmatched = []
+        for source_id in ids:
+            if source_id not in matched:
+                unmatched.append(source_id)
+        return matched, unmatched
