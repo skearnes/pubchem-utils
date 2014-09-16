@@ -163,7 +163,7 @@ class PubChem(object):
         ids = np.asarray(ids, dtype=int)
         return ids
 
-    def id_exchange(self, ids, source, operation_type='same',
+    def id_exchange(self, ids, source=None, operation_type='same',
                     output_type='cid'):
         """
         Use the PubChem Identifier exchange service.
@@ -172,8 +172,8 @@ class PubChem(object):
         ----------
         ids : iterable
             Input identifiers.
-        source : str
-            Input source.
+        source : str, optional
+            Input source. If None, it will be inferred from ids (if possible).
         operation_type : str, optional (default 'same')
             Operation type. Defaults to exact matches.
         output_type : str, optional (default 'cid')
@@ -216,6 +216,12 @@ class PubChem(object):
   </PCT-Data_input>
 </PCT-Data>
 """
+        if np.unique(ids).size != len(ids):
+            raise ValueError('Source IDs must be unique.')
+        if source is None:
+            source = self.guess_source(ids[0])
+            if source is None:
+                raise RuntimeError('Cannot guess identifier source.')
         mapping = {'source': source, 'operation_type': operation_type,
                    'output_type': output_type}
         source_ids = []
@@ -232,11 +238,31 @@ class PubChem(object):
 
         # identify matched and unmatched IDs
         matched = {}
-        for line in rval:
+        for line in rval.splitlines():
             source, dest = line.split()
+            if source in matched:
+                if matched[source] != dest:
+                    raise ValueError('Nonidentical duplicate mapping.')
             matched[source] = dest
         unmatched = []
         for source_id in ids:
             if source_id not in matched:
                 unmatched.append(source_id)
         return matched, unmatched
+
+    @staticmethod
+    def guess_source(identifier):
+        """
+        Guess the source for an identifier.
+
+        Parameters
+        ----------
+        identifier : str
+            Identifier.
+        """
+        source = None
+        if identifier.startswith('CHEMBL'):
+            source = 'ChEMBL'
+        elif identifier.startswith('ZINC'):
+            source = 'ZINC'
+        return source

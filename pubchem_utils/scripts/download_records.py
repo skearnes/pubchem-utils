@@ -7,9 +7,9 @@ __copyright__ = "Copyright 2014, Stanford University"
 __license__ = "3-clause BSD"
 
 import argparse
-import numpy as np
 
 from pubchem_utils import PubChem
+from pubchem_utils.scripts import read_ids
 
 
 def parse_args(input_args=None):
@@ -73,20 +73,6 @@ def main(ids, filename=None, sids=False, download_format='sdf',
     engine = PubChem(delay=delay)
     engine.get_records(ids, filename, sids, download_format, compression,
                        use_3d, n_conformers)
-
-
-def read_ids(filename):
-    """
-    Read record IDs from a file.
-
-    Parameters
-    ----------
-    filename : str
-        Filename containing PubChem record IDs.
-    """
-    with open(filename) as f:
-        ids = np.asarray([line.strip() for line in f], dtype=int)
-    return ids
 
 if __name__ == '__main__':
     args = parse_args()
