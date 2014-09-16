@@ -6,7 +6,8 @@ import shutil
 import tempfile
 import unittest
 
-from ..download_records import main, parse_args, read_ids
+from .. import read_ids
+from ..download_records import main, parse_args
 
 
 class TestDownloadIds(unittest.TestCase):
@@ -21,7 +22,7 @@ class TestDownloadIds(unittest.TestCase):
         _, self.filename = tempfile.mkstemp(dir=self.temp_dir)
 
         # write CIDs
-        self.cids = [2244]
+        self.cids = np.asarray([2244])
         _, self.cid_filename = tempfile.mkstemp(suffix='.txt',
                                                 dir=self.temp_dir)
         with open(self.cid_filename, 'wb') as f:
@@ -54,7 +55,8 @@ class TestDownloadIds(unittest.TestCase):
         Test read_ids.
         """
         ids = read_ids(self.cid_filename)
-        assert np.array_equal(ids, self.cids)
+        assert np.array_equal(np.asarray(ids, dtype=self.cids.dtype),
+                              self.cids)
 
     def test_download_cid(self):
         """

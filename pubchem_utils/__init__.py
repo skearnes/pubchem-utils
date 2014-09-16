@@ -240,9 +240,8 @@ class PubChem(object):
         matched = {}
         for line in rval.splitlines():
             source, dest = line.split()
-            if source in matched:
-                if matched[source] != dest:
-                    raise ValueError('Nonidentical duplicate mapping.')
+            if source in matched and matched[source] != dest:
+                raise ValueError('Nonidentical duplicate mapping.')
             matched[source] = dest
         unmatched = []
         for source_id in ids:
