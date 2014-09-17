@@ -76,9 +76,10 @@ def main(ids, source=None, prefix=None, sids=False, mapping=False, delay=10):
         with open('{}-matched.txt'.format(prefix), 'wb') as f:
             for value in matched.values():
                 f.write('{}\n'.format(value))
-    with open('{}-unmatched.txt'.format(prefix), 'wb') as f:
-        for value in unmatched:
-            f.write('{}\n'.format(value))
+    if len(unmatched):
+        with open('{}-unmatched.txt'.format(prefix), 'wb') as f:
+            for value in unmatched:
+                f.write('{}\n'.format(value))
 
 if __name__ == '__main__':
     args = parse_args()
