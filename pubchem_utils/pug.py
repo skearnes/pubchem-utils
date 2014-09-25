@@ -88,7 +88,6 @@ class PUGQuery(object):
         """
         Cancel uncompleted queries.
         """
-        warnings.warn('Canceling PUG request.')
         self.cancel()
 
     def pug_request(self, query):
@@ -140,6 +139,8 @@ class PUGQuery(object):
         Cancel a pending request.
         """
         if self.alive:
+            assert self.id is not None
+            warnings.warn('Canceling PUG request.')
             query = self.cancel_template % {'id': self.id}
             self.pug_request(query)
             self.alive = False
@@ -154,22 +155,19 @@ class PUGQuery(object):
 
     def submit(self):
         """
-        Submit the query and monitor its progess.
+        Submit the query and monitor its progress.
         """
         if self.alive:
-            warnings.warn('This request has already been submitted.')
+            warnings.warn('This request is already active.')
             return
         self.alive = True
         self.pug_request(self.query)
         if self.verbose:
             print self.id,
         while self.download_url is None:
-            if self.verbose:
-                print '.',
             time.sleep(self.delay)
             self.check_status()
-        if self.verbose:
-            print
+        self.alive = False
 
     def fetch(self, filename=None, compression=None):
         """
