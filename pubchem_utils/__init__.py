@@ -23,10 +23,25 @@ class PubChem(object):
     delay : int, optional (default 10)
         Number of seconds for PUGQuery objects to wait between status
         checks.
+    verbose : bool, optional (default False)
+        Whether to create PUG queries in verbose mode.
     """
-    def __init__(self, submit=True, delay=10):
+    def __init__(self, submit=True, delay=10, verbose=False):
         self.submit = submit
         self.delay = delay
+        self.verbose = verbose
+
+    def get_query(self, query):
+        """
+        Create a PUG request.
+
+        Parameters
+        ----------
+        query : str
+            PUG query XML.
+        """
+        return PUGQuery(query, submit=self.submit, delay=self.delay,
+                        verbose=self.verbose)
 
     def get_records(self, ids, filename=None, sids=False,
                     download_format='sdf', compression='gzip', use_3d=False,
@@ -123,8 +138,7 @@ class PubChem(object):
         mapping['uids'] = xml_uids
 
         # construct query
-        query = PUGQuery(query_template % mapping, submit=self.submit,
-                         delay=self.delay)
+        query = self.get_query(query_template % mapping)
         rval = query.fetch(filename)
         return rval
 
@@ -243,8 +257,7 @@ class PubChem(object):
                         '</PCT-ID-List_uids_E>')
         mapping = {'group_by': group_by, 'dataset': dataset, 'aids': aid_xml,
                    'compression': compression}
-        query = PUGQuery(query_template % mapping, submit=self.submit,
-                         delay=self.delay)
+        query = self.get_query(query_template % mapping)
         rval = query.fetch(filename, compression=compression)
         return rval
 
@@ -317,8 +330,7 @@ class PubChem(object):
         mapping['source_ids'] = ''.join(source_ids)
 
         # construct query
-        query = PUGQuery(query_template % mapping, submit=self.submit,
-                         delay=self.delay)
+        query = self.get_query(query_template % mapping)
         rval = query.fetch(compression='gzip')
 
         # identify matched and unmatched IDs

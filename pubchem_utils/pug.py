@@ -35,6 +35,8 @@ class PUGQuery(object):
         Number of seconds to wait between status checks.
     n_attempts : int, optional (default 3)
         Number of times to attempt query submission.
+    verbose : bool, optional (default False)
+        Whether to be verbose.
     """
     status_template = """
     <PCT-Data>
@@ -52,10 +54,12 @@ class PUGQuery(object):
     """
     url = 'https://pubchem.ncbi.nlm.nih.gov/pug/pug.cgi'
 
-    def __init__(self, query, submit=True, delay=10, n_attempts=3):
+    def __init__(self, query, submit=True, delay=10, n_attempts=3,
+                 verbose=False):
         self.query = query
         self.delay = delay
         self.n_attemps = n_attempts
+        self.verbose = verbose
 
         self.submitted = False
         self.id = None
@@ -127,9 +131,15 @@ class PUGQuery(object):
             return
         self.submitted = True
         self.pug_request(self.query)
+        if self.verbose:
+            print self.id,
         while self.download_url is None:
+            if self.verbose:
+                print '.',
             time.sleep(self.delay)
             self.check_status()
+        if self.verbose:
+            print
 
     def fetch(self, filename=None, compression=None):
         """
