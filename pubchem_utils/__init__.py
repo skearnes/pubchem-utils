@@ -163,6 +163,91 @@ class PubChem(object):
         ids = np.asarray(ids, dtype=int)
         return ids
 
+    def get_assay_data(self, aids, filename=None, substance_view=True,
+                       concise=False, compression='gzip'):
+        """
+        Download PubChem BioAssay data table.
+
+        Parameters
+        ----------
+        aids : array_like
+            PubChem BioAssay IDs (AIDs).
+        filename : str, optional
+            Output filename. If not provided, a temporary file is created.
+        substance_view : bool, optional (default True)
+            Whether to group results by substance. If False, results will be
+            grouped by compound. The default (True) is recommended when
+            retrieving data from a single assay.
+        compression : str, optional (default 'gzip')
+            Compression type for assay data.
+        concise : bool, optional (default False)
+            Whether to return the concise data table. If False, the complete
+            data table is retrieved.
+        """
+        query_template = """
+<PCT-Data>
+  <PCT-Data_input>
+    <PCT-InputData>
+      <PCT-InputData_query>
+        <PCT-Query>
+          <PCT-Query_type>
+            <PCT-QueryType>
+              <PCT-QueryType_bas>
+                <PCT-QueryAssayData>
+    <PCT-QueryAssayData_output value="csv">4</PCT-QueryAssayData_output>
+                  <PCT-QueryAssayData_aids>
+                    <PCT-QueryUids>
+                      <PCT-QueryUids_ids>
+                        <PCT-ID-List>
+                          <PCT-ID-List_db>pcassay</PCT-ID-List_db>
+                          <PCT-ID-List_uids>
+                            %(aids)s
+                          </PCT-ID-List_uids>
+                        </PCT-ID-List>
+                      </PCT-QueryUids_ids>
+                    </PCT-QueryUids>
+                  </PCT-QueryAssayData_aids>
+                    %(dataset)s
+                  <PCT-QueryAssayData_focus>
+                    <PCT-Assay-FocusOption>
+                    %(group_by)s
+                    </PCT-Assay-FocusOption>
+                  </PCT-QueryAssayData_focus>
+                  <PCT-QueryAssayData_compression value="%(compression)s"/>
+                </PCT-QueryAssayData>
+              </PCT-QueryType_bas>
+            </PCT-QueryType>
+          </PCT-Query_type>
+        </PCT-Query>
+      </PCT-InputData_query>
+    </PCT-InputData>
+  </PCT-Data_input>
+</PCT-Data>
+"""
+        group_by = ('<PCT-Assay-FocusOption_group-results-by value="{}">{}' +
+                    '</PCT-Assay-FocusOption_group-results-by>')
+        if substance_view:
+            group_by = group_by.format('substance', 4)
+        else:
+            group_by = group_by.format('compound', 0)
+
+        dataset = ('<PCT-QueryAssayData_dataset value="{}">{}' +
+                   '</PCT-QueryAssayData_dataset>')
+        if concise:
+            dataset = dataset.format('concise', 1)
+        else:
+            dataset = dataset.format('complete', 0)
+        aid_xml = ''
+        for aid in np.atleast_1d(aids):
+            aid_xml += ('<PCT-ID-List_uids_E>{}'.format(aid) +
+                        '</PCT-ID-List_uids_E>')
+        mapping = {'group_by': group_by, 'dataset': dataset, 'aids': aid_xml,
+                   'compression': compression}
+        query = PUGQuery(query_template % mapping, submit=self.submit,
+                         delay=self.delay)
+        rval = query.fetch(filename, compression=compression)
+        return rval
+
     def id_exchange(self, ids, source=None, operation_type='same',
                     output_type='cid'):
         """

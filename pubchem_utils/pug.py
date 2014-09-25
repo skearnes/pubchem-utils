@@ -94,7 +94,7 @@ class PUGQuery(object):
         if status not in ['success', 'queued', 'running']:
             raise PUGError(
                 '\nQuery:\n------\n{}\n'.format(
-                    query.splitlines(keepends=True)[:100]) +
+                    '\n'.join(query.splitlines()[:100])) +
                 'Response:\n---------\n{}'.format(response))
 
         # check for a download URL
