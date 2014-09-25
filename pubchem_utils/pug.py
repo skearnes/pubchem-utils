@@ -139,10 +139,10 @@ class PUGQuery(object):
         """
         Cancel a pending request.
         """
-        assert self.id is not None and self.alive
-        query = self.cancel_template % {'id': self.id}
-        self.pug_request(query)
-        self.alive = False
+        if self.id is not None and self.alive:
+            query = self.cancel_template % {'id': self.id}
+            self.pug_request(query)
+            self.alive = False
 
     def check_status(self):
         """
