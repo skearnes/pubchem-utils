@@ -38,6 +38,20 @@ class PUGQuery(object):
     verbose : bool, optional (default False)
         Whether to be verbose.
     """
+    cancel_template = """
+    <PCT-Data>
+      <PCT-Data_input>
+        <PCT-InputData>
+          <PCT-InputData_request>
+            <PCT-Request>
+              <PCT-Request_reqid>%(id)s</PCT-Request_reqid>
+              <PCT-Request_type value="cancel"/>
+            </PCT-Request>
+          </PCT-InputData_request>
+        </PCT-InputData>
+      </PCT-Data_input>
+    </PCT-Data>
+    """
     status_template = """
     <PCT-Data>
      <PCT-Data_input>
@@ -61,14 +75,21 @@ class PUGQuery(object):
         self.n_attemps = n_attempts
         self.verbose = verbose
 
-        self.submitted = False
         self.id = None
         self.download_url = None
         self.filename = None
         self.data = None
+        self.alive = False
 
         if submit:
             self.submit()
+
+    def __del__(self):
+        """
+        Cancel uncompleted queries.
+        """
+        warnings.warn('Canceling PUG request.')
+        self.cancel()
 
     def pug_request(self, query):
         """
@@ -95,7 +116,7 @@ class PUGQuery(object):
         # check for errors
         status_re = re.search('<PCT-Status value="(.*?)"/>', response)
         status = status_re.groups()[0]
-        if status not in ['success', 'queued', 'running']:
+        if status not in ['success', 'queued', 'running', 'stopped']:
             raise PUGError(
                 '\nQuery:\n------\n{}\n'.format(
                     '\n'.join(query.splitlines()[:100])) +
@@ -114,6 +135,15 @@ class PUGQuery(object):
                 '<PCT-Waiting_reqid>\s*(.*?)\s*</PCT-Waiting_reqid>', response)
             self.id = reqid_re.groups()[0]
 
+    def cancel(self):
+        """
+        Cancel a pending request.
+        """
+        assert self.id is not None and self.alive
+        query = self.cancel_template % {'id': self.id}
+        self.pug_request(query)
+        self.alive = False
+
     def check_status(self):
         """
         Check the status of the query.
@@ -126,10 +156,10 @@ class PUGQuery(object):
         """
         Submit the query and monitor its progess.
         """
-        if self.submitted:
+        if self.alive:
             warnings.warn('This request has already been submitted.')
             return
-        self.submitted = True
+        self.alive = True
         self.pug_request(self.query)
         if self.verbose:
             print self.id,
@@ -152,7 +182,7 @@ class PUGQuery(object):
         compression : str, optional
             Compression type used to decode data.
         """
-        if not self.submitted:
+        if not self.alive:
             self.submit()
         if self.download_url is None:
             raise PUGError('No download URL.')
