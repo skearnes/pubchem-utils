@@ -158,7 +158,7 @@ class PubChem(object):
         ids = []
         for this in response.readlines():
             this = this.strip()
-            if this:
+            if int(this):  # 0 is not a valid ID
                 ids.append(this)
         ids = np.asarray(ids, dtype=int)
         return ids
