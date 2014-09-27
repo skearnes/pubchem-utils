@@ -139,7 +139,7 @@ class PubChem(object):
 
         # construct query
         query = self.get_query(query_template % mapping)
-        rval = query.fetch(filename)
+        rval = query.fetch(filename, compression=compression)
         return rval
 
     def get_ids_from_assay(self, aid, sids=False, activity_outcome=None):
