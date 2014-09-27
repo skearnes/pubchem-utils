@@ -266,6 +266,9 @@ class PubChem(object):
         """
         Use the PubChem Identifier exchange service.
 
+        Currently only supports mapping from Registry IDs (e.g. ChEMBL IDs) to
+        PubChem IDs.
+
         Parameters
         ----------
         ids : iterable
@@ -314,18 +317,19 @@ class PubChem(object):
   </PCT-Data_input>
 </PCT-Data>
 """
+        ids = np.atleast_1d(ids)
         if np.unique(ids).size != len(ids):
             raise ValueError('Source IDs must be unique.')
         if source is None:
             source = self.guess_source(ids[0])
             if source is None:
-                raise RuntimeError('Cannot guess identifier source.')
+                raise ValueError('Cannot guess identifier source.')
         mapping = {'source': source, 'operation_type': operation_type,
                    'output_type': output_type}
         source_ids = []
         for source_id in ids:
-            id_xml = ('<PCT-RegistryIDs_source-ids_E>' + source_id
-                      + '</PCT-RegistryIDs_source-ids_E>\n')
+            id_xml = ('<PCT-RegistryIDs_source-ids_E>{}'.format(source_id) +
+                      '</PCT-RegistryIDs_source-ids_E>\n')
             source_ids.append(id_xml)
         mapping['source_ids'] = ''.join(source_ids)
 
@@ -337,6 +341,10 @@ class PubChem(object):
         matched = {}
         for line in rval.splitlines():
             source, dest = line.split()
+            try:
+                dest = int(dest)  # try to convert to an int
+            except ValueError:
+                pass
             if source in matched and matched[source] != dest:
                 raise ValueError('Nonidentical duplicate mapping.')
             matched[source] = dest
@@ -357,8 +365,8 @@ class PubChem(object):
             Identifier.
         """
         source = None
-        if identifier.startswith('CHEMBL'):
+        if str(identifier).startswith('CHEMBL'):
             source = 'ChEMBL'
-        elif identifier.startswith('ZINC'):
+        elif str(identifier).startswith('ZINC'):
             source = 'ZINC'
         return source

@@ -116,10 +116,13 @@ class PUGQuery(object):
         status_re = re.search('<PCT-Status value="(.*?)"/>', response)
         status = status_re.groups()[0]
         if status not in ['success', 'queued', 'running', 'stopped']:
-            raise PUGError(
-                '\nQuery:\n------\n{}\n'.format(
-                    '\n'.join(query.splitlines()[:100])) +
-                'Response:\n---------\n{}'.format(response))
+            msg = 'Original Query:\n------\n{}\n'.format(
+                '\n'.join(self.query.splitlines()[:100]))
+            if query != self.query:
+                msg += 'Current Query:\n--------------\n{}\n'.format(
+                    '\n'.join(query.splitlines()[:100]))
+            msg += 'Response:\n---------\n{}'.format(response)
+            raise PUGError(msg)
 
         # check for a download URL
         download_url_re = re.search(

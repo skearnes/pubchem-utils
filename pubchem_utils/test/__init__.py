@@ -139,3 +139,17 @@ class TestPubChem(unittest.TestCase):
         data = self.engine.get_ids_from_assay(466, sids=True,
                                               activity_outcome='inactive')
         assert np.array_equal(data, ref)
+
+    def test_get_assay_data(self):
+        """
+        Test PubChem.get_assay_data.
+        """
+        data = self.engine.get_assay_data(504772)
+        assert len(data.splitlines()) == 332  # 331 records plus header
+
+    def test_id_exchange(self):
+        """
+        Test PubChem.id_exchange.
+        """
+        data = self.engine.id_exchange('CHEMBL25')
+        assert data[0]['CHEMBL25'] == 2244
