@@ -153,3 +153,19 @@ class TestPubChem(unittest.TestCase):
         """
         data = self.engine.id_exchange('CHEMBL25')
         assert data[0]['CHEMBL25'] == 2244
+
+    def test_structure_search_smiles(self):
+        """
+        Test PubChem.structure_search with SMILES queries.
+        """
+        smiles = self.engine.get_records([2244], download_format='smiles')
+        smiles = smiles.split()[1]
+        assert self.engine.structure_search(smiles) == 2244
+
+    def test_structure_search_sdf(self):
+        """
+        Test PubChem.structure_search with SDF queries.
+        """
+        sdf = self.engine.get_records([2244])
+        assert self.engine.structure_search(
+            sdf, structure_format='sdf') == 2244
