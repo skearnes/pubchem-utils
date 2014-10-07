@@ -389,30 +389,26 @@ class PubChem(object):
         cids = {}
         for this_smiles in smiles:
             request_id = None
-            failure = False
             response = urllib2.urlopen(query_template.format(this_smiles))
             for line in response.readlines():
                 search = re.search('<ListKey>(\d+)</ListKey>', line)
                 if search is not None:
                     request_id = search.groups()[0]
-                search = re.search('<Code>PUGREST.ServerError</Code>', line)
-                if search is not None:
-                    failure = True
-            if request_id is None or failure:
+            if request_id is None:
                 cids[this_smiles] = None
                 continue
             cid = None
             while True:
-                response = urllib2.urlopen(status_template.format(request_id))
-                failure = False
+                try:
+                    response = urllib2.urlopen(
+                        status_template.format(request_id))
+                except urllib2.HTTPError:
+                    break
                 for line in response.readlines():
                     search = re.search('<CID>(\d+)</CID>', line)
                     if search is not None:
                         cid = int(search.groups()[0])
-                    search = re.search('<Code>PUGREST.BadRequest</Code>', line)
-                    if search is not None:
-                        failure = True
-                if cid is not None or failure:
+                if cid is not None:
                     break
                 time.sleep(self.delay)
             cids[this_smiles] = cid
