@@ -20,7 +20,7 @@ import urllib2
 import warnings
 
 
-class PUGQuery(object):
+class PugQuery(object):
     """
     Submit a PUG query and store the download URL when it becomes
     available.
@@ -90,7 +90,7 @@ class PUGQuery(object):
         """
         self.cancel()
 
-    def pug_request(self, query):
+    def request(self, query):
         """
         Submit a query to PUG and extract either the query ID or the
         download URL.
@@ -145,7 +145,7 @@ class PUGQuery(object):
             assert self.id is not None
             warnings.warn('Canceling PUG request.')
             query = self.cancel_template % {'id': self.id}
-            self.pug_request(query)
+            self.request(query)
             self.alive = False
 
     def check_status(self):
@@ -154,7 +154,7 @@ class PUGQuery(object):
         """
         assert self.id is not None
         query = self.status_template % {'id': self.id}
-        self.pug_request(query)
+        self.request(query)
 
     def submit(self):
         """
@@ -164,7 +164,7 @@ class PUGQuery(object):
             warnings.warn('This request is already active.')
             return
         self.alive = True
-        self.pug_request(self.query)
+        self.request(self.query)
         if self.verbose:
             print self.id,
         while self.download_url is None:

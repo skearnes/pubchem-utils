@@ -7,9 +7,11 @@ __copyright__ = "Copyright 2014, Stanford University"
 __license__ = "3-clause BSD"
 
 import numpy as np
+import re
+import time
 import urllib2
 
-from .pug import PUGQuery
+from .pug import PugQuery
 
 
 class PubChem(object):
@@ -40,7 +42,7 @@ class PubChem(object):
         query : str
             PUG query XML.
         """
-        return PUGQuery(query, submit=self.submit, delay=self.delay,
+        return PugQuery(query, submit=self.submit, delay=self.delay,
                         verbose=self.verbose)
 
     def get_records(self, ids, filename=None, sids=False,
@@ -370,3 +372,48 @@ class PubChem(object):
         elif str(identifier).startswith('ZINC'):
             source = 'ZINC'
         return source
+
+    def structure_search(self, smiles):
+        """
+        Search PubChem by structure.
+
+        Parameters
+        ----------
+        smiles : array_like
+            List of SMILES queries.
+        """
+        query_template = ('http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound' +
+                          '/identity/smiles/{}/XML')
+        status_template = ('http://pubchem.ncbi.nlm.nih.gov/rest/pug' +
+                           '/compound/listkey/{}/cids/XML')
+        cids = {}
+        for this_smiles in smiles:
+            request_id = None
+            failure = False
+            response = urllib2.urlopen(query_template.format(this_smiles))
+            for line in response.readlines():
+                search = re.search('<ListKey>(\d+)</ListKey>', line)
+                if search is not None:
+                    request_id = search.groups()[0]
+                search = re.search('<Code>PUGREST.ServerError</Code>', line)
+                if search is not None:
+                    failure = True
+            if request_id is None or failure:
+                cids[this_smiles] = None
+                continue
+            cid = None
+            while True:
+                response = urllib2.urlopen(status_template.format(request_id))
+                failure = False
+                for line in response.readlines():
+                    search = re.search('<CID>(\d+)</CID>', line)
+                    if search is not None:
+                        cid = int(search.groups()[0])
+                    search = re.search('<Code>PUGREST.BadRequest</Code>', line)
+                    if search is not None:
+                        failure = True
+                if cid is not None or failure:
+                    break
+                time.sleep(self.delay)
+            cids[this_smiles] = cid
+        return cids

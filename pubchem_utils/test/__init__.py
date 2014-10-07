@@ -153,3 +153,12 @@ class TestPubChem(unittest.TestCase):
         """
         data = self.engine.id_exchange('CHEMBL25')
         assert data[0]['CHEMBL25'] == 2244
+
+    def test_structure_search(self):
+        """
+        Test PubChem.structure_search.
+        """
+        data = self.engine.structure_search(['CC(=O)OC1=CC=CC=C1C(=O)O',
+                                             'CC(C)CC1=CC=C(C=C1)C(C)C(=O)O'])
+        assert data['CC(=O)OC1=CC=CC=C1C(=O)O'] == 2244
+        assert data['CC(C)CC1=CC=C(C=C1)C(C)C(=O)O'] == 3672
