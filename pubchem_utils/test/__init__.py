@@ -152,7 +152,7 @@ class TestPubChem(unittest.TestCase):
         Test PubChem.id_exchange.
         """
         data = self.engine.id_exchange('CHEMBL25')
-        assert data[0]['CHEMBL25'] == 2244
+        assert data['CHEMBL25'] == 2244
 
     def test_structure_search_smiles(self):
         """

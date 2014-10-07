@@ -341,21 +341,20 @@ class PubChem(object):
         rval = query.fetch(compression='gzip')
 
         # identify matched and unmatched IDs
-        matched = {}
+        id_map = {}
         for line in rval.splitlines():
             source, dest = line.split()
             try:
                 dest = int(dest)  # try to convert to an int
             except ValueError:
                 pass
-            if source in matched and matched[source] != dest:
+            if source in id_map and id_map[source] != dest:
                 raise ValueError('Nonidentical duplicate mapping.')
-            matched[source] = dest
-        unmatched = []
+            id_map[source] = dest
         for source_id in ids:
-            if source_id not in matched:
-                unmatched.append(source_id)
-        return matched, unmatched
+            if source_id not in id_map:
+                id_map[source_id] = None
+        return id_map
 
     @staticmethod
     def guess_source(identifier):
