@@ -175,6 +175,6 @@ class TestPubChem(unittest.TestCase):
         Test PubChem.get_parent_cids.
         """
         same = self.engine.get_parent_cids([2244])
-        assert same == 2244, same  # just a single int returned
+        assert same == {2244}, same
         parents = self.engine.get_parent_cids([23666729, 5338317])
         assert parents == {2244, 3672}, parents
