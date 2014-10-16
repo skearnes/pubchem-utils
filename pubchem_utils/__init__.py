@@ -149,7 +149,7 @@ class PubChem(object):
         """
         Get IDs of parent compounds. Note that the parent IDs are not
         guaranteed to be returned in the same order as the child IDs, so we
-        return a set if there is more than one result.
+        return a set.
 
         Parameters
         ----------
@@ -167,8 +167,6 @@ class PubChem(object):
             cid = int(line)
             if cid:  # 0 is not a valid ID
                 parents.add(cid)
-        if len(parents) == 1:
-            parents = parents.pop()
         return parents
 
     def get_ids_from_assay(self, aid, sids=False, activity_outcome=None):
