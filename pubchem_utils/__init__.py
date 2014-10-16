@@ -156,7 +156,8 @@ class PubChem(object):
         id : str
             PubChem substance or compound ID.
         filename : str, optional
-            Output filename. If not provided, the output is returned as a string
+            Output filename. If not provided, the output is returned as a
+            string
         sid : bool, optional (default False)
             Whether id is a SID. If False, ID are assumed to be a CID.
         use_3d : bool, optional (default False)
