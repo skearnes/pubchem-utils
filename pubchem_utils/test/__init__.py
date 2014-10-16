@@ -169,3 +169,12 @@ class TestPubChem(unittest.TestCase):
         sdf = self.engine.get_records([2244])
         assert self.engine.structure_search(
             sdf, structure_format='sdf') == 2244
+
+    def test_get_parent_cids(self):
+        """
+        Test PubChem.get_parent_cids.
+        """
+        same = self.engine.get_parent_cids([2244])
+        assert same == 2244, same  # just a single int returned
+        parents = self.engine.get_parent_cids([23666729, 5338317])
+        assert parents == {2244, 3672}, parents
