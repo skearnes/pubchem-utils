@@ -59,7 +59,9 @@ class TestPubChem(unittest.TestCase):
         url = os.path.join(self.rest_url, 'compound/cid/2244/SDF')
         ref = urllib2.urlopen(url).read()
         data = self.engine.get_records([2244])
+        data2 = self.engine.get_record(2244)
         assert self.identical_sdf(data, ref)
+        assert self.identical_sdf(data2, ref)
 
     def test_sid(self):
         """
@@ -68,7 +70,9 @@ class TestPubChem(unittest.TestCase):
         url = os.path.join(self.rest_url, 'substance/sid/179038559/SDF')
         ref = urllib2.urlopen(url).read()
         data = self.engine.get_records([179038559], sids=True)
+        data2 = self.engine.get_record(179038559, sid=True)
         assert self.identical_sdf(data, ref)
+        assert self.identical_sdf(data2, ref)
 
     def test_3d(self):
         """
@@ -78,7 +82,9 @@ class TestPubChem(unittest.TestCase):
                            'compound/cid/2244/SDF?record_type=3d')
         ref = urllib2.urlopen(url).read()
         data = self.engine.get_records([2244], use_3d=True)
+        data2 = self.engine.get_record(2244, use_3d=True)
         assert self.identical_sdf(data, ref)
+        assert self.identical_sdf(data2, ref)
 
     def test_aid_cids(self):
         """

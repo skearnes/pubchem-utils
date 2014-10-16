@@ -7,6 +7,7 @@ __copyright__ = "Copyright 2014, Stanford University"
 __license__ = "3-clause BSD"
 
 import numpy as np
+import shutil
 import re
 import time
 import urllib
@@ -65,7 +66,7 @@ class PubChem(object):
             Download file format.
         compression : str, optional (default 'gzip')
             Compression type for downloaded structures.
-        use_3d : bool, optional (default True)
+        use_3d : bool, optional (default False)
             Whether to query 3D information. If False, 2D information is
             retrieved.
         n_conformers : int, optional (default 1)
@@ -144,6 +145,55 @@ class PubChem(object):
         query = self.get_query(query_template % mapping)
         rval = query.fetch(filename, compression=compression)
         return rval
+
+    def get_record(self, id, filename=None, sid=False, use_3d=False):
+        """
+        Download a single record for a substance or compound identified by
+        PubChem substance ID (SIDs) or compound ID (CID).
+
+        Parameters
+        ----------
+        id : str
+            PubChem substance or compound ID.
+        filename : str, optional
+            Output filename. If not provided, the output is returned as a string
+        sid : bool, optional (default False)
+            Whether id is a SID. If False, ID are assumed to be a CID.
+        use_3d : bool, optional (default True)
+            Whether to query 3D information. If False, 2D information is
+            retrieved.
+
+        Returns
+        -------
+        val : {str, None}
+            The requested substance or compound, in an SDF-format string, or
+            None if `filename` output is specified
+
+        Notes
+        -----
+        Requests for multiple substances, compounds or conformers can be
+        batched together _much_ more efficiently by using `PubChem.get_records`
+        """
+
+        base = 'http://pubchem.ncbi.nlm.nih.gov/rest/pug/%s?%s'
+        if sid:
+            specialization = 'substance/sid/%s/SDF' % id
+        else:
+            specialization = 'compound/cid/%s/SDF' % id
+
+        if use_3d:
+            params = {'record_type': '3d'}
+        else:
+            params = {}
+
+        url = base % (specialization, urllib.urlencode(params))
+        comm = urllib2.urlopen(url)
+
+        if filename is None:
+            return comm.read()
+        else:
+            with open(filename, 'w') as f:
+                shutil.copyfileobj(comm, f)
 
     def get_parent_cids(self, cids):
         """
