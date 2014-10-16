@@ -149,7 +149,7 @@ class PubChem(object):
     def get_record(self, id, filename=None, sid=False, use_3d=False):
         """
         Download a single record for a substance or compound identified by
-        PubChem substance ID (SIDs) or compound ID (CID).
+        PubChem substance ID (SID) or compound ID (CID).
 
         Parameters
         ----------
