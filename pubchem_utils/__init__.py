@@ -159,7 +159,7 @@ class PubChem(object):
             Output filename. If not provided, the output is returned as a
             string
         sid : bool, optional (default False)
-            Whether id is a SID. If False, ID are assumed to be a CID.
+            Whether id is a SID. If False, ID is assumed to be a CID.
         use_3d : bool, optional (default False)
             Whether to query 3D information. If False, 2D information is
             retrieved.
