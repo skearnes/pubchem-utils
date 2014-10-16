@@ -200,7 +200,7 @@ class PubChem(object):
         if filename is None:
             return comm.read()
         else:
-            with open(filename, 'w') as f:
+            with open(filename, 'wb') as f:
                 shutil.copyfileobj(comm, f)
 
     def get_parent_cids(self, cids):
