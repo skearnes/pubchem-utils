@@ -5,6 +5,7 @@ import numpy as np
 import os
 import unittest
 import urllib2
+import tempfile
 
 from .. import PubChem
 
@@ -52,32 +53,60 @@ class TestPubChem(unittest.TestCase):
         except AssertionError:
             return False
 
-    def test_cid(self):
+    def test_get_records_cid(self):
         """
-        2D CID request.
+        2D CID request with get_records().
         """
         url = os.path.join(self.rest_url, 'compound/cid/2244/SDF')
         ref = urllib2.urlopen(url).read()
         data = self.engine.get_records([2244])
         assert self.identical_sdf(data, ref)
 
-    def test_sid(self):
+    def test_get_record_cid(self):
         """
-        SID request.
+        2D CID request with get_record().
+        """
+        url = os.path.join(self.rest_url, 'compound/cid/2244/SDF')
+        ref = urllib2.urlopen(url).read()
+        data = self.engine.get_record(2244)
+        assert self.identical_sdf(data, ref)
+
+    def test_get_records_sid(self):
+        """
+        SID request with get_records().
         """
         url = os.path.join(self.rest_url, 'substance/sid/179038559/SDF')
         ref = urllib2.urlopen(url).read()
         data = self.engine.get_records([179038559], sids=True)
         assert self.identical_sdf(data, ref)
 
-    def test_3d(self):
+    def test_get_record_sid(self):
         """
-        3D structure request.
+        SID request with get_record().
+        """
+        url = os.path.join(self.rest_url, 'substance/sid/179038559/SDF')
+        ref = urllib2.urlopen(url).read()
+        data = self.engine.get_record(179038559, sid=True)
+        assert self.identical_sdf(data, ref)
+
+    def test_get_records_3d(self):
+        """
+        3D structure request with get_records().
         """
         url = os.path.join(self.rest_url,
                            'compound/cid/2244/SDF?record_type=3d')
         ref = urllib2.urlopen(url).read()
         data = self.engine.get_records([2244], use_3d=True)
+        assert self.identical_sdf(data, ref)
+
+    def test_get_record_3d(self):
+        """
+        3D structure request with get_record().
+        """
+        url = os.path.join(self.rest_url,
+                           'compound/cid/2244/SDF?record_type=3d')
+        ref = urllib2.urlopen(url).read()
+        data = self.engine.get_record(2244, use_3d=True)
         assert self.identical_sdf(data, ref)
 
     def test_aid_cids(self):
@@ -178,3 +207,18 @@ class TestPubChem(unittest.TestCase):
         assert same == {2244}, same
         parents = self.engine.get_parent_cids([23666729, 5338317])
         assert parents == {2244, 3672}, parents
+
+    def test_get_record_filename(self):
+        """
+        Test PubChem.get_record()'s filename kwarg.
+        """
+        fd, fn = tempfile.mkstemp()
+        try:
+            ref = self.engine.get_record(2244)
+            self.engine.get_record(2244, filename=fn)
+            with open(fn) as f:
+                data = f.read()
+            assert self.identical_sdf(data, ref)
+        finally:
+            os.close(fd)
+            os.unlink(fn)
