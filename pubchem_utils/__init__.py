@@ -174,6 +174,13 @@ class PubChem(object):
         -----
         Requests for multiple substances, compounds or conformers can be
         batched together _much_ more efficiently by using `PubChem.get_records`
+
+        Raises
+        ------
+        Invalid CID or SID requests will result in a urllib2.HTTPError (400).
+        Certain PubChem compounds and substances may not have available 3D
+        structures, in which case this method, when called with use_3d=True,
+        will throw a urllib2.HTTPError (404).
         """
 
         base = 'http://pubchem.ncbi.nlm.nih.gov/rest/pug/%s?%s'
