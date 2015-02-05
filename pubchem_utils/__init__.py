@@ -346,6 +346,12 @@ class PubChem(object):
         rval = query.fetch(filename, compression=compression)
         return rval
 
+    def get_assay_description(self, aid, output_format='json'):
+        url = ('http://pubchem.ncbi.nlm.nih.gov/rest/pug/assay/aid/' +
+               '{}/description/{}'.format(aid, output_format))
+        response = urllib2.urlopen(url)
+        return response.read()
+
     def id_exchange(self, ids, source=None, operation_type='same',
                     output_type='cid'):
         """
