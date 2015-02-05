@@ -1,6 +1,7 @@
 """
 Tests for PubChem PUG interface.
 """
+import json
 import numpy as np
 import os
 import unittest
@@ -175,6 +176,16 @@ class TestPubChem(unittest.TestCase):
         """
         data = self.engine.get_assay_data(504772)
         assert len(data.splitlines()) == 332  # 331 records plus header
+
+    def test_get_assay_description(self):
+        """
+        Test PubChem.get_assay_description.
+        """
+        data = self.engine.get_assay_description(490)
+        tree = json.loads(data)
+        assert len(tree['PC_AssayContainer']) == 1
+        aid = tree['PC_AssayContainer'][0]['assay']['descr']['aid']['id']
+        assert aid == 490
 
     def test_id_exchange(self):
         """
