@@ -195,7 +195,7 @@ class TestPubChem(unittest.TestCase):
         # check AIDs are all present (order is not guaranteed)
         desc_aids = []
         for desc in data:
-            desc_aids.append(desc['assay']['descr']['aid']['id'])
+            desc_aids.append(desc['aid']['id'])
         assert np.array_equal(np.sort(aids), np.sort(desc_aids))
 
     def test_id_exchange(self):
