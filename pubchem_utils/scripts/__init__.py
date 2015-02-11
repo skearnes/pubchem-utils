@@ -1,12 +1,11 @@
 """
 Scripting utilities.
 """
+import gzip
 
 __author__ = "Steven Kearnes"
 __copyright__ = "Copyright 2014, Stanford University"
 __license__ = "3-clause BSD"
-
-import gzip
 
 
 def read_ids(filename):

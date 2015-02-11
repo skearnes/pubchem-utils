@@ -1,11 +1,6 @@
 """
 Utilities for interacting with PubChem.
 """
-
-__author__ = "Steven Kearnes"
-__copyright__ = "Copyright 2014-2015, Stanford University"
-__license__ = "3-clause BSD"
-
 import json
 import numpy as np
 import shutil
@@ -17,6 +12,10 @@ import urllib2
 from joblib import delayed, Parallel
 
 from .pug import PugQuery
+
+__author__ = "Steven Kearnes"
+__copyright__ = "Copyright 2014-2015, Stanford University"
+__license__ = "3-clause BSD"
 
 
 class PubChem(object):

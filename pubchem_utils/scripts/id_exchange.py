@@ -2,16 +2,15 @@
 """
 Use the PubChem Identifier Exchange service.
 """
-
-__author__ = "Steven Kearnes"
-__copyright__ = "Copyright 2014, Stanford University"
-__license__ = "3-clause BSD"
-
 import argparse
 import numpy as np
 
 from pubchem_utils import PubChem
 from pubchem_utils.scripts import read_ids
+
+__author__ = "Steven Kearnes"
+__copyright__ = "Copyright 2014, Stanford University"
+__license__ = "3-clause BSD"
 
 
 def parse_args(input_args=None):
