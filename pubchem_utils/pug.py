@@ -6,11 +6,6 @@ https://pubchem.ncbi.nlm.nih.gov/pug/pug.xsd.
 
 See also https://pubchem.ncbi.nlm.nih.gov/pug/pughelp.html.
 """
-
-__author__ = "Steven Kearnes"
-__copyright__ = "Copyright 2014, Stanford University"
-__license__ = "3-clause BSD"
-
 import gzip
 import re
 from StringIO import StringIO
@@ -18,6 +13,10 @@ import time
 import urllib
 import urllib2
 import warnings
+
+__author__ = "Steven Kearnes"
+__copyright__ = "Copyright 2014, Stanford University"
+__license__ = "3-clause BSD"
 
 
 class PugQuery(object):
