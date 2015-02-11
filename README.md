@@ -1,4 +1,4 @@
-pubchem-utils [![Build Status](https://travis-ci.org/skearnes/pubchem-utils.svg?branch=master)](https://travis-ci.org/skearnes/pubchem-utils)
+pubchem-utils
 =============
 
 Utilities for interacting with [PubChem](https://pubchem.ncbi.nlm.nih.gov)
