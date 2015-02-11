@@ -182,7 +182,7 @@ class TestPubChem(unittest.TestCase):
         """
         data = self.engine.get_assay_descriptions([490])
         assert len(data) == 1
-        assert data[0]['assay']['descr']['aid']['id'] == 490  # check AID
+        assert data[0]['aid']['id'] == 490  # check AID
 
     def test_get_assay_descriptions_parallel(self):
         """
