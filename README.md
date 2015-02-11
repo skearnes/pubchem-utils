@@ -1,7 +1,7 @@
 pubchem-utils
 =============
 
-Utilities for interacting with [PubChem](https://pubchem.ncbi.nlm.nih.gov).
+Utilities for interacting with [PubChem](https://pubchem.ncbi.nlm.nih.gov)
 
 __Note:__ sometimes one or more of the tests fail but then pass when re-run. Until I can
 write better tests to capture this behavior, I have taken down the Travis indicator
