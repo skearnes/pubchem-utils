@@ -3,10 +3,9 @@ Utilities for interacting with PubChem.
 """
 
 __author__ = "Steven Kearnes"
-__copyright__ = "Copyright 2014, Stanford University"
+__copyright__ = "Copyright 2014-2015, Stanford University"
 __license__ = "3-clause BSD"
 
-from joblib import delayed, Parallel
 import json
 import numpy as np
 import shutil
@@ -14,6 +13,8 @@ import re
 import time
 import urllib
 import urllib2
+
+from joblib import delayed, Parallel
 
 from .pug import PugQuery
 
