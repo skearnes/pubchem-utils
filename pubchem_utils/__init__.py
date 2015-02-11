@@ -6,6 +6,8 @@ __author__ = "Steven Kearnes"
 __copyright__ = "Copyright 2014, Stanford University"
 __license__ = "3-clause BSD"
 
+from joblib import delayed, Parallel
+import json
 import numpy as np
 import shutil
 import re
@@ -346,11 +348,34 @@ class PubChem(object):
         rval = query.fetch(filename, compression=compression)
         return rval
 
-    def get_assay_description(self, aid, output_format='json'):
-        url = ('http://pubchem.ncbi.nlm.nih.gov/rest/pug/assay/aid/' +
-               '{}/description/{}'.format(aid, output_format))
-        response = urllib2.urlopen(url)
-        return response.read()
+    def get_assay_descriptions(self, aids, output_format='json',
+                               batch_size=500, n_jobs=1, max_attempts=3):
+        """
+        Get assay descriptions.
+
+        Parameters
+        ----------
+        aids : list
+            List of assay IDs.
+        output_format : str (default='json')
+            Output format.
+        """
+        results = Parallel(n_jobs=n_jobs, verbose=5)(
+            delayed(_get_assay_descriptions)
+            (this_aids, output_format, batch_size, max_attempts)
+            for this_aids in np.array_split(aids, n_jobs))
+        descriptions = []
+        if output_format == 'json':
+            for result in results:
+                for this in result:
+                    data = json.loads(this)
+                    assert len(data) == 1
+                    assert data.keys()[0] == 'PC_AssayContainer'
+                    for description in data['PC_AssayContainer']:
+                        descriptions.append(description)
+        else:
+            raise NotImplementedError(output_format)
+        return descriptions
 
     def id_exchange(self, ids, source=None, operation_type='same',
                     output_type='cid'):
@@ -502,3 +527,45 @@ class PubChem(object):
                 break
             time.sleep(self.delay)
         return cid
+
+
+def _get_assay_descriptions(aids, output_format='json', batch_size=500,
+                            max_attempts=3):
+    """
+    Parallel worker for PubChem.get_assay_descriptions.
+
+    Parameters
+    ----------
+    aids : list
+        List of assay IDs.
+    output_format : str (default='json')
+        Output format.
+    batch_size : int (default 500)
+        Number of descriptions per request.
+    max_attempts : int (default 3)
+        Maximum number of query attempts. The batch_size is halved after each
+        failure.
+    """
+    url = ('http://pubchem.ncbi.nlm.nih.gov/rest/pug/assay/aid/' +
+           '{aids}/description/{format}')
+    descriptions = []
+    failures = 0
+    start = 0
+    while True:
+        if start >= len(aids):
+            break  # stop when we are out of AIDs
+        query_aids = aids[start:start+batch_size]
+        query = url.format(aids=','.join([str(aid) for aid in query_aids]),
+                           format=output_format)
+        try:
+            response = urllib2.urlopen(query)
+        except urllib2.HTTPError as e:
+            failures += 1
+            batch_size /= 2  # halve the batch size and try again
+            if failures >= max_attempts:
+                raise e
+            continue
+        descriptions.append(response.read())
+        failures = 0  # reset the failure count
+        start += batch_size  # move the start index
+    return descriptions

@@ -177,15 +177,27 @@ class TestPubChem(unittest.TestCase):
         data = self.engine.get_assay_data(504772)
         assert len(data.splitlines()) == 332  # 331 records plus header
 
-    def test_get_assay_description(self):
+    def test_get_assay_descriptions(self):
         """
-        Test PubChem.get_assay_description.
+        Test PubChem.get_assay_descriptions.
         """
-        data = self.engine.get_assay_description(490)
-        tree = json.loads(data)
-        assert len(tree['PC_AssayContainer']) == 1
-        aid = tree['PC_AssayContainer'][0]['assay']['descr']['aid']['id']
-        assert aid == 490
+        data = self.engine.get_assay_descriptions([490])
+        assert len(data) == 1
+        assert data[0]['assay']['descr']['aid']['id'] == 490  # check AID
+
+    def test_get_assay_descriptions_parallel(self):
+        """
+        Test PubChem.get_assay_descriptions with n_jobs > 1.
+        """
+        aids = [490, 466, 9, 548, 851]
+        data = self.engine.get_assay_descriptions(aids, n_jobs=2)
+        assert len(data) == 5
+
+        # check AIDs are all present (order is not guaranteed)
+        desc_aids = []
+        for desc in data:
+            desc_aids.append(desc['assay']['descr']['aid']['id'])
+        assert np.array_equal(np.sort(aids), np.sort(desc_aids))
 
     def test_id_exchange(self):
         """
