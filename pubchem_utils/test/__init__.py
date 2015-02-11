@@ -1,7 +1,6 @@
 """
 Tests for PubChem PUG interface.
 """
-import json
 import numpy as np
 import os
 import unittest
