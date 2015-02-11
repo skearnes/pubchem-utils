@@ -1,16 +1,19 @@
 language: python
 python: 2.7
 
-# install code analysis tools
 before_install:
- - pip install pep8
- - pip install pyflakes
-  
+
+ # install code analysis tools
+ - pip install pep8 pyflakes
+
+ # install other packages
+ - pip install joblib
+
 # install the package
 install: python setup.py install
 
 # run tests
-script: 
+script:
  - nosetests
  - pep8 pubchem_utils
  - pyflakes pubchem_utils
