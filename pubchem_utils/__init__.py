@@ -372,7 +372,7 @@ class PubChem(object):
                     assert len(data) == 1
                     assert data.keys()[0] == 'PC_AssayContainer'
                     for description in data['PC_AssayContainer']:
-                        descriptions.append(description)
+                        descriptions.append(description['assay']['descr'])
         else:
             raise NotImplementedError(output_format)
         return descriptions
